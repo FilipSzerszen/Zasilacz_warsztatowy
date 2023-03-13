@@ -50,18 +50,21 @@ namespace Zasilacz_warsztatowy
             this.PanelTylny = new System.Windows.Forms.TableLayoutPanel();
             this.PanelWykresow = new System.Windows.Forms.TableLayoutPanel();
             this.chV = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.PanelBoczny = new System.Windows.Forms.TableLayoutPanel();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.PanelBoczny = new System.Windows.Forms.TableLayoutPanel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.dodaj = new System.Windows.Forms.Button();
+            this.połącz = new System.Windows.Forms.Button();
+            this.test = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelTylny.SuspendLayout();
             this.PanelWykresow.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chV)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.PanelBoczny.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -101,7 +104,7 @@ namespace Zasilacz_warsztatowy
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(393, 6);
+            this.label1.Location = new System.Drawing.Point(105, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(56, 13);
             this.label1.TabIndex = 8;
@@ -110,7 +113,7 @@ namespace Zasilacz_warsztatowy
             // cBoxPortCom
             // 
             this.cBoxPortCom.FormattingEnabled = true;
-            this.cBoxPortCom.Location = new System.Drawing.Point(455, 2);
+            this.cBoxPortCom.Location = new System.Drawing.Point(167, 2);
             this.cBoxPortCom.Name = "cBoxPortCom";
             this.cBoxPortCom.Size = new System.Drawing.Size(65, 21);
             this.cBoxPortCom.TabIndex = 7;
@@ -120,7 +123,7 @@ namespace Zasilacz_warsztatowy
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStatus.Location = new System.Drawing.Point(546, 6);
+            this.lblStatus.Location = new System.Drawing.Point(258, 6);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(30, 13);
             this.lblStatus.TabIndex = 8;
@@ -131,7 +134,7 @@ namespace Zasilacz_warsztatowy
             this.rBtnON.AutoSize = true;
             this.rBtnON.Checked = true;
             this.rBtnON.Enabled = false;
-            this.rBtnON.Location = new System.Drawing.Point(529, 6);
+            this.rBtnON.Location = new System.Drawing.Point(241, 6);
             this.rBtnON.Name = "rBtnON";
             this.rBtnON.Size = new System.Drawing.Size(14, 13);
             this.rBtnON.TabIndex = 9;
@@ -182,25 +185,36 @@ namespace Zasilacz_warsztatowy
             this.PanelWykresow.ColumnCount = 1;
             this.PanelWykresow.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.PanelWykresow.Controls.Add(this.chV, 0, 0);
+            this.PanelWykresow.Controls.Add(this.groupBox1, 0, 1);
             this.PanelWykresow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelWykresow.Location = new System.Drawing.Point(3, 3);
             this.PanelWykresow.Name = "PanelWykresow";
             this.PanelWykresow.RowCount = 2;
-            this.PanelWykresow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.PanelWykresow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.PanelWykresow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.PanelWykresow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.PanelWykresow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.PanelWykresow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 80F));
+            this.PanelWykresow.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.PanelWykresow.Size = new System.Drawing.Size(368, 585);
             this.PanelWykresow.TabIndex = 24;
             // 
             // chV
             // 
-            chartArea1.AxisX.Crossing = 0D;
+            chartArea1.AxisX.Crossing = -1.7976931348623157E+308D;
+            chartArea1.AxisX.IsStartedFromZero = false;
+            chartArea1.AxisX.LabelStyle.Enabled = false;
+            chartArea1.AxisX.MajorGrid.Enabled = false;
             chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.Silver;
+            chartArea1.AxisX.MajorTickMark.Enabled = false;
             chartArea1.AxisX.Minimum = 0D;
-            chartArea1.AxisY.Crossing = 0D;
+            chartArea1.AxisX.TextOrientation = System.Windows.Forms.DataVisualization.Charting.TextOrientation.Horizontal;
+            chartArea1.AxisY.Crossing = -1.7976931348623157E+308D;
+            chartArea1.AxisY.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+            chartArea1.AxisY.IsStartedFromZero = false;
+            chartArea1.AxisY.LabelAutoFitStyle = ((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles)(((System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.IncreaseFont | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.DecreaseFont) 
+            | System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.StaggeredLabels)));
+            chartArea1.AxisY.MajorGrid.Interval = 0D;
             chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.Silver;
+            chartArea1.AxisY.MajorTickMark.Interval = 0D;
+            chartArea1.AxisY2.MajorGrid.Interval = 0D;
+            chartArea1.AxisY2.MajorTickMark.Interval = 0D;
             chartArea1.InnerPlotPosition.Auto = false;
             chartArea1.InnerPlotPosition.Height = 80.23259F;
             chartArea1.InnerPlotPosition.Width = 95F;
@@ -212,18 +226,37 @@ namespace Zasilacz_warsztatowy
             this.chV.Location = new System.Drawing.Point(3, 3);
             this.chV.Name = "chV";
             series1.ChartArea = "Napięcie";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Area;
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series1.IsVisibleInLegend = false;
             series1.Name = "chV";
             this.chV.Series.Add(series1);
-            this.chV.Size = new System.Drawing.Size(362, 286);
+            this.chV.Size = new System.Drawing.Size(362, 462);
             this.chV.TabIndex = 15;
             this.chV.Text = "chart2";
             title1.Name = "Title1";
             title1.Text = "Napięcie [V]";
             this.chV.Titles.Add(title1);
-            this.chV.MouseLeave += new System.EventHandler(this.chV_MouseLeave);
-            this.chV.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chV_MouseMove);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Location = new System.Drawing.Point(3, 471);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(362, 96);
+            this.groupBox1.TabIndex = 39;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Ustawienia";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 22);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(116, 13);
+            this.label6.TabIndex = 18;
+            this.label6.Text = "Ograniczenie prądowe:";
             // 
             // PanelBoczny
             // 
@@ -240,7 +273,8 @@ namespace Zasilacz_warsztatowy
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Controls.Add(this.test);
+            this.panel1.Controls.Add(this.dodaj);
             this.panel1.Controls.Add(this.tBoxTemp);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
@@ -248,26 +282,35 @@ namespace Zasilacz_warsztatowy
             this.panel1.Size = new System.Drawing.Size(198, 579);
             this.panel1.TabIndex = 18;
             // 
-            // groupBox1
+            // dodaj
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Location = new System.Drawing.Point(3, 3);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(195, 234);
-            this.groupBox1.TabIndex = 39;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Ustawienia";
+            this.dodaj.Location = new System.Drawing.Point(15, 456);
+            this.dodaj.Name = "dodaj";
+            this.dodaj.Size = new System.Drawing.Size(75, 23);
+            this.dodaj.TabIndex = 40;
+            this.dodaj.Text = "dodaj";
+            this.dodaj.UseVisualStyleBackColor = true;
+            this.dodaj.Click += new System.EventHandler(this.dodaj_Click);
             // 
-            // label6
+            // połącz
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 22);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(116, 13);
-            this.label6.TabIndex = 18;
-            this.label6.Text = "Ograniczenie prądowe:";
+            this.połącz.Location = new System.Drawing.Point(294, 2);
+            this.połącz.Name = "połącz";
+            this.połącz.Size = new System.Drawing.Size(75, 21);
+            this.połącz.TabIndex = 41;
+            this.połącz.Text = "Połącz";
+            this.połącz.UseVisualStyleBackColor = true;
+            this.połącz.Click += new System.EventHandler(this.połącz_Click);
+            // 
+            // test
+            // 
+            this.test.Location = new System.Drawing.Point(43, 175);
+            this.test.Name = "test";
+            this.test.Size = new System.Drawing.Size(75, 23);
+            this.test.TabIndex = 41;
+            this.test.Text = "test";
+            this.test.UseVisualStyleBackColor = true;
+            this.test.Click += new System.EventHandler(this.button1_Click);
             // 
             // Zasilacz_warsztatowy
             // 
@@ -275,6 +318,7 @@ namespace Zasilacz_warsztatowy
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(584, 637);
+            this.Controls.Add(this.połącz);
             this.Controls.Add(this.PanelTylny);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.rBtnON);
@@ -294,11 +338,11 @@ namespace Zasilacz_warsztatowy
             this.PanelTylny.ResumeLayout(false);
             this.PanelWykresow.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chV)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.PanelBoczny.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -325,6 +369,9 @@ namespace Zasilacz_warsztatowy
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button dodaj;
+        private System.Windows.Forms.Button połącz;
+        private System.Windows.Forms.Button test;
     }
 }
 

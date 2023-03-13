@@ -7,7 +7,7 @@ using System.IO.Ports;
 
 struct Dane
 {
-    public int sekunda;
+    public int pomiar;
     public float natężenie;
 }
 
@@ -18,6 +18,17 @@ namespace Zasilacz_warsztatowy
         private Dane d;
         private List<Dane> lista = new List<Dane>();
 
+        public static int wielkość = 5;
+        double[] Pomiary = new double[wielkość];
+        bool full = false;
+        int akt_pomiar = 0;
+        double min = 2500;
+        double maks = 0;
+        bool połączono = false;
+
+        public static Random r = new Random();
+        float rand = 0;
+
         public static Zasilacz_warsztatowy Form1;
         public TextBox tb;
         public static string port_com = "";
@@ -27,35 +38,63 @@ namespace Zasilacz_warsztatowy
 
         int temp;
 
-        public void Wypełnij_wykresy()
+        private void button1_Click(object sender, EventArgs e)
         {
-            
+            chV.ChartAreas[0].Position=new System.Windows.Forms.DataVisualization.Charting.ElementPosition(5, 10, 80, 100);
+        }
+        public void Wypełnij_wykres()
+        {
+
             chV.Series["chV"].Points.Clear();
 
-            for (int i = 0; i < lista.Count; i++)
+            if (full)
             {
-                chV.Series["chV"].Points.AddXY(lista[i].sekunda, lista[i].natężenie);
+                min = 2500;
+                maks = 0;
+                for (int i = 0; i < wielkość; i++)
+                {
+                    chV.Series["chV"].Points.AddXY(i, (Pomiary[(akt_pomiar + i + 1) % wielkość]) / 100);
+                    if (min > Pomiary[(akt_pomiar + i + 1) % wielkość]) { min = Pomiary[(akt_pomiar + i + 1) % wielkość]; };
+                    if (maks < Pomiary[(akt_pomiar + i + 1) % wielkość]) { maks = Pomiary[(akt_pomiar + i + 1) % wielkość]; };
+
+                }
+                chV.ChartAreas[0].AxisY.Minimum = min / 100;
+                chV.ChartAreas[0].AxisY.Maximum = maks / 100;
+
+                chV.ChartAreas[0].AxisY2.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.True;
+                chV.ChartAreas[0].AxisY2.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+                chV.ChartAreas[0].AxisY2.Minimum = min / 100;
+                chV.ChartAreas[0].AxisY2.Maximum = maks / 100;
+                chV.ChartAreas[0].AxisY2.LabelAutoFitStyle = System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.LabelsAngleStep45;
+                //chV.ChartAreas[0].AxisY2.LabelStyle=
+                //chV.ChartAreas[0].AxisY2.
+            }
+            else
+            {
+
+                for (int i = 0; i <= akt_pomiar; i++)
+                {
+                    chV.Series["chV"].Points.AddXY(i, Pomiary[i] / 100);
+                    chV.ChartAreas[0].AxisX.Crossing = i + 2;
+                    if (min > Pomiary[i]) { min = Pomiary[i]; };
+                    if (maks < Pomiary[i]) { maks = Pomiary[i]; };
+                                      
+
+                }
 
             }
 
-            //czas
-            Ile_rekordów();
-
-            chV.Visible = true;
-            PanelTylny.Visible = true;
-
         }
-        void Ile_rekordów()
-        {
-            StripStatus.Text = "Rekordów: " + lista.Count.ToString() + " (" + TimeSpan.FromSeconds(lista.Count).ToString() + ")";
-        }
+        //void Ile_rekordów()
+        //{
+        //    StripStatus.Text = "Rekordów: " + lista.Count.ToString() + " (" + TimeSpan.FromSeconds(lista.Count).ToString() + ")";
+        //}
 
 
         public Zasilacz_warsztatowy()
         {
             InitializeComponent();
             Form1 = this;
-            tb = tBoxTemp;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -65,6 +104,29 @@ namespace Zasilacz_warsztatowy
             cBoxPortCom.Items.AddRange(ports);
             Form1.SetDesktopLocation((Screen.PrimaryScreen.Bounds.Width - Form1.Size.Width) / 2, (Screen.PrimaryScreen.Bounds.Height - Form1.Size.Height) / 2);
 
+        }
+        private void dodaj_Click(object sender, EventArgs e)
+        {
+            rand = r.Next(0, 200);
+            Pomiary[akt_pomiar] = rand;
+            tBoxTemp.Text += rand / 100 + "\r\n";
+            Wypełnij_wykres();
+            akt_pomiar = (++akt_pomiar) % wielkość;
+            if (akt_pomiar == 0) full = true;
+        }
+
+
+        private void połącz_Click(object sender, EventArgs e)
+        {
+            if (!połączono)
+            {
+                Otworz_port();
+            }
+            else
+            {
+                Zamknij_port();
+            }
+            
         }
 
         void Otworz_port()
@@ -79,6 +141,7 @@ namespace Zasilacz_warsztatowy
                 serialPort1.StopBits = (StopBits)1;
                 serialPort1.Parity = Parity.None;
                 serialPort1.Open();
+                połącz.Text = "Rozłącz";
             }
             catch (Exception err)
             {
@@ -93,6 +156,7 @@ namespace Zasilacz_warsztatowy
             if (serialPort1.IsOpen)
             {
                 serialPort1.Close();
+                połącz.Text = "Połącz";
             }
         }
 
@@ -110,12 +174,12 @@ namespace Zasilacz_warsztatowy
             linia = tBoxTemp.Lines[x++];
             xk += Convert.ToInt32(linia);
 
-            d.sekunda = 0;
+            d.pomiar = 0;
             while (x < xk + 2)
             {
 
                 linia = tBoxTemp.Lines[x++];
-                
+
                 temp = Convert.ToByte(linia);
 
                 //Prędkość
@@ -130,64 +194,10 @@ namespace Zasilacz_warsztatowy
 
 
                 lista.Add(d);
-                d.sekunda++;
+                d.pomiar++;
             }
 
         }
-
-        void Wartosc_chwilowa(int x, int y)
-        {
-            if (wgrane)
-            {
-                Point Punkt_myszy = new Point(x, y);
-
-
-
-
-                chV.ChartAreas[0].CursorX.Interval = 1;
-                chV.ChartAreas[0].CursorY.Interval = 0;
-
-                chV.ChartAreas[0].CursorX.SetCursorPixelPosition(Punkt_myszy, true);
-                //chV.ChartAreas[0].CursorY.SetCursorPixelPosition(Punkt_myszy, true);
-
-
-                //chV.ChartAreas[0].CursorY.SetCursorPixelPosition(Punkt_myszy, true);
-
-                //textx.Text = "x: " + String.Format("{0:N0}", chV.ChartAreas[0].AxisX.PixelPositionToValue(e.X));
-                //texty.Text = "y: " + String.Format("{0:N1}", chV.ChartAreas[0].AxisY.PixelPositionToValue(e.Y));
-
-                temp = (int)(chV.ChartAreas[0].AxisX.PixelPositionToValue(x));
-
-                //    temp3 = (int)(chV.ChartAreas[0].AxisX.PixelPositionToValue(0));
-                //    MessageBox.Show("Exception: " + ex.Message);
-                //}
-                if (temp < 0) temp = 0;
-                if (temp >= lista.Count) temp = lista.Count - 1;
-
-                StripStatus.Text = TimeSpan.FromSeconds(temp).ToString() + "  Prędkość: " + String.Format("{0:N1}", lista[temp].natężenie);
-
-
-
-                //HitTestResult wynik = chV.HitTest(x, y);
-
-                //if (wynik.PointIndex > -1 && wynik.ChartArea != null)
-                //{
-                //    punktx.Text = String.Format("{0:N1}", wynik.Series.Points[wynik.PointIndex].XValue);
-                //    punkty.Text = String.Format("{0:N1}", wynik.Series.Points[wynik.PointIndex].YValues[0]);
-            }
-        }
-        private void chV_MouseMove(object sender, MouseEventArgs e)
-        {
-            Wartosc_chwilowa(e.X, e.Y);
-        }
-
-
-        private void chV_MouseLeave(object sender, EventArgs e)
-        {
-            Ile_rekordów();
-            wgrane = true;
-        }
-
 
         public void Zgraj_dane()
         {
@@ -249,6 +259,7 @@ namespace Zasilacz_warsztatowy
             }
 
         }
+
 
     }
 }
