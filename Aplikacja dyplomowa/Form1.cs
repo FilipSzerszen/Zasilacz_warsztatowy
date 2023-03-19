@@ -15,14 +15,14 @@ namespace Zasilacz_warsztatowy
 {
     public partial class Zasilacz_warsztatowy : Form
     {
+
         private Dane d;
-        private List<Dane> lista = new List<Dane>();
+        double OgrPrądowe = 0;
 
         public static int wielkość = 5;
         double[] Pomiary = new double[wielkość];
         bool full = false;
         int akt_pomiar = 0;
-        double min = 2500;
         double maks = 0;
         bool połączono = false;
 
@@ -34,13 +34,21 @@ namespace Zasilacz_warsztatowy
         public static string port_com = "";
 
         string linia;
-        bool wgrane = false;
 
-        int temp;
-
-        private void button1_Click(object sender, EventArgs e)
+        public void ustawOgrPr()
         {
-            chV.ChartAreas[0].Position=new System.Windows.Forms.DataVisualization.Charting.ElementPosition(5, 10, 80, 100);
+            if (OgrPrądowe < 0) OgrPrądowe = 0;
+            if (OgrPrądowe > 20) OgrPrądowe = 20;
+            OgrTBox.Text = String.Format("{0:0.00}", OgrPrądowe);
+            //OgrTBox.Text = (OgrPrądowe/100).ToString()+"."+ (OgrPrądowe%100).ToString();
+            OgrScrBar.Value = (int)(OgrPrądowe * 100);
+        }
+
+
+        private void test_Click(object sender, EventArgs e)
+        {
+
+
         }
         public void Wypełnij_wykres()
         {
@@ -49,23 +57,22 @@ namespace Zasilacz_warsztatowy
 
             if (full)
             {
-                min = 2500;
                 maks = 0;
                 for (int i = 0; i < wielkość; i++)
                 {
                     chV.Series["chV"].Points.AddXY(i, (Pomiary[(akt_pomiar + i + 1) % wielkość]) / 100);
-                    if (min > Pomiary[(akt_pomiar + i + 1) % wielkość]) { min = Pomiary[(akt_pomiar + i + 1) % wielkość]; };
+                    //if (min > Pomiary[(akt_pomiar + i + 1) % wielkość]) { min = Pomiary[(akt_pomiar + i + 1) % wielkość]; };
                     if (maks < Pomiary[(akt_pomiar + i + 1) % wielkość]) { maks = Pomiary[(akt_pomiar + i + 1) % wielkość]; };
 
                 }
-                chV.ChartAreas[0].AxisY.Minimum = min / 100;
-                chV.ChartAreas[0].AxisY.Maximum = maks / 100;
+                //chV.ChartAreas[0].AxisY.Minimum = min / 100;
+                //chV.ChartAreas[0].AxisY.Maximum = maks / 100;
 
-                chV.ChartAreas[0].AxisY2.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.True;
-                chV.ChartAreas[0].AxisY2.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-                chV.ChartAreas[0].AxisY2.Minimum = min / 100;
+                //chV.ChartAreas[0].AxisY2.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.True;
+                //chV.ChartAreas[0].AxisY2.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
+                //chV.ChartAreas[0].AxisY2.Minimum = min / 100;
                 chV.ChartAreas[0].AxisY2.Maximum = maks / 100;
-                chV.ChartAreas[0].AxisY2.LabelAutoFitStyle = System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.LabelsAngleStep45;
+                //chV.ChartAreas[0].AxisY2.LabelAutoFitStyle = System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.LabelsAngleStep45;
                 //chV.ChartAreas[0].AxisY2.LabelStyle=
                 //chV.ChartAreas[0].AxisY2.
             }
@@ -75,16 +82,18 @@ namespace Zasilacz_warsztatowy
                 for (int i = 0; i <= akt_pomiar; i++)
                 {
                     chV.Series["chV"].Points.AddXY(i, Pomiary[i] / 100);
-                    chV.ChartAreas[0].AxisX.Crossing = i + 2;
-                    if (min > Pomiary[i]) { min = Pomiary[i]; };
+                    chV.ChartAreas[0].AxisX.Crossing = i;
+                    chV.ChartAreas[0].AxisX.Maximum = i;
+                    //if (min > Pomiary[i]) { min = Pomiary[i]; };
                     if (maks < Pomiary[i]) { maks = Pomiary[i]; };
-                                      
+
 
                 }
 
             }
 
         }
+
         //void Ile_rekordów()
         //{
         //    StripStatus.Text = "Rekordów: " + lista.Count.ToString() + " (" + TimeSpan.FromSeconds(lista.Count).ToString() + ")";
@@ -99,17 +108,26 @@ namespace Zasilacz_warsztatowy
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            OgrScrBar.Value = (int)(100 * OgrPrądowe);
+            OgrTBox.Text = String.Format("{0:0.00}", OgrPrądowe);
             cBoxPortCom.Items.Clear();
             string[] ports = SerialPort.GetPortNames();
             cBoxPortCom.Items.AddRange(ports);
             Form1.SetDesktopLocation((Screen.PrimaryScreen.Bounds.Width - Form1.Size.Width) / 2, (Screen.PrimaryScreen.Bounds.Height - Form1.Size.Height) / 2);
-
+            OgrL1.Enabled = false;
+            OgrL10.Enabled = false;
+            OgrL100.Enabled = false;
+            OgrP1.Enabled = false;
+            OgrP10.Enabled = false;
+            OgrP100.Enabled = false;
+            OgrScrBar.Enabled = false;
+            OgrTBox.Enabled = false;
         }
         private void dodaj_Click(object sender, EventArgs e)
         {
             rand = r.Next(0, 200);
             Pomiary[akt_pomiar] = rand;
-            tBoxTemp.Text += rand / 100 + "\r\n";
+            tBoxTemp.Text += rand / 100 + ", ";
             Wypełnij_wykres();
             akt_pomiar = (++akt_pomiar) % wielkość;
             if (akt_pomiar == 0) full = true;
@@ -126,7 +144,7 @@ namespace Zasilacz_warsztatowy
             {
                 Zamknij_port();
             }
-            
+
         }
 
         void Otworz_port()
@@ -167,7 +185,6 @@ namespace Zasilacz_warsztatowy
             int xk;
             int x = 0;
 
-            if (lista.Count != 0) lista.Clear();
 
             linia = tBoxTemp.Lines[x++];
             xk = Convert.ToInt32(linia) * 256;
@@ -192,8 +209,6 @@ namespace Zasilacz_warsztatowy
                 temp2 += temp;
                 d.natężenie = (float)temp2 / 10;
 
-
-                lista.Add(d);
                 d.pomiar++;
             }
 
@@ -260,6 +275,118 @@ namespace Zasilacz_warsztatowy
 
         }
 
+        private void OgrScrBar_Scroll(object sender, ScrollEventArgs e)
+        {
+            OgrPrądowe = (double)(OgrScrBar.Value)/100;
+            ustawOgrPr();
+        }
 
+        private void OgrP1_Click(object sender, EventArgs e)
+        {
+            OgrPrądowe += 0.01;
+            ustawOgrPr();
+        }
+
+        private void OgrP10_Click(object sender, EventArgs e)
+        {
+            OgrPrądowe += 0.1;
+            ustawOgrPr();
+        }
+
+        private void OgrP100_Click(object sender, EventArgs e)
+        {
+            OgrPrądowe += 1;
+            ustawOgrPr();
+        }
+
+        private void OgrL1_Click(object sender, EventArgs e)
+        {
+            OgrPrądowe -= 0.01;
+            ustawOgrPr();
+        }
+
+        private void OgrL10_Click(object sender, EventArgs e)
+        {
+            OgrPrądowe -= 0.1;
+            ustawOgrPr();
+        }
+
+        private void OgrL100_Click(object sender, EventArgs e)
+        {
+            OgrPrądowe -= 1;
+            ustawOgrPr();
+        }
+
+        private void OgrCBox_Click(object sender, EventArgs e)
+        {
+            if (OgrCBox.Checked)
+            {
+                OgrL1.Enabled = true;
+                OgrL10.Enabled = true;
+                OgrL100.Enabled = true;
+                OgrP1.Enabled = true;
+                OgrP10.Enabled = true;
+                OgrP100.Enabled = true;
+                OgrScrBar.Enabled = true;
+                OgrTBox.Enabled = true;
+            }
+            else
+            {
+                OgrL1.Enabled = false;
+                OgrL10.Enabled = false;
+                OgrL100.Enabled = false;
+                OgrP1.Enabled = false;
+                OgrP10.Enabled = false;
+                OgrP100.Enabled = false;
+                OgrScrBar.Enabled = false;
+                OgrTBox.Enabled = false;
+            }
+        }
+
+
+        private void OgrTBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            //double temp;
+            //if (double.TryParse(OgrTBox.Text, out temp))
+            //{
+            //    OgrPrądowe = (int)(temp * 100);
+            //    tBoxTemp.Text += OgrPrądowe + " ";
+
+            //}
+            //ustawOgrPr();
+            OgrTBox.Text = OgrTBox.Text.Replace(".", ",");
+            if (double.TryParse(OgrTBox.Text, out double temp))
+            {
+                OgrPrądowe = temp;
+
+                if (OgrPrądowe > 99) 
+                {
+                    OgrPrądowe = temp / 10;
+                    OgrTBox.Text = String.Format("{0:0.0}", OgrPrądowe);
+                }
+                if (OgrPrądowe > 20 && OgrTBox.Text.Length < 5)
+                {
+                    OgrPrądowe/=10;
+                    OgrTBox.Text = OgrPrądowe.ToString();
+                }
+                else if (OgrPrądowe > 20 && OgrTBox.Text.Length > 4)
+                {
+                    OgrPrądowe = 20;
+                    OgrTBox.Text = String.Format("{0:0.00}", OgrPrądowe);
+                }
+            }
+            else
+            {
+                OgrTBox.Text = String.Format("{0:0.00}", OgrPrądowe);
+            }
+            if (OgrPrądowe < 10 && OgrTBox.Text.Length > 4)
+            {
+                OgrPrądowe = Math.Round(OgrPrądowe-0.005, 2);
+                OgrTBox.Text = String.Format("{0:0.00}", OgrPrądowe);
+            }
+            OgrTBox.Select(OgrTBox.Text.Length, 0);
+            tBoxTemp.Text += OgrPrądowe + " ";
+            OgrScrBar.Value = (int)OgrPrądowe*100;
+        }
     }
 }
