@@ -17,7 +17,7 @@ namespace Zasilacz_warsztatowy
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Zasilacz_warsztatowy());
-            Zasilacz_warsztatowy.Form1.SetDesktopLocation((Screen.PrimaryScreen.Bounds.Width - Zasilacz_warsztatowy.Form1.Size.Width) / 2, (Screen.PrimaryScreen.Bounds.Height - Zasilacz_warsztatowy.Form1.Size.Height) / 2);
+            //Zasilacz_warsztatowy.Form1.SetDesktopLocation((Screen.PrimaryScreen.Bounds.Width - Zasilacz_warsztatowy.Form1.Size.Width) / 2, (Screen.PrimaryScreen.Bounds.Height - Zasilacz_warsztatowy.Form1.Size.Height) / 2);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Zasilacz_warsztatowy
         private Dane d;
         double OgrPrądowe = 0;
 
-        public static int wielkość = 5;
+        public static int wielkość = 20; // int.Parse(cBoxPróbek.Text);
         double[] Pomiary = new double[wielkość];
         bool full = false;
         int akt_pomiar = 0;
@@ -31,7 +31,7 @@ namespace Zasilacz_warsztatowy
 
         public static Zasilacz_warsztatowy Form1;
         public TextBox tb;
-        public static string port_com = "";
+        public static string port_com;
 
         string linia;
 
@@ -48,7 +48,6 @@ namespace Zasilacz_warsztatowy
         private void test_Click(object sender, EventArgs e)
         {
 
-
         }
         public void Wypełnij_wykres()
         {
@@ -61,26 +60,18 @@ namespace Zasilacz_warsztatowy
                 for (int i = 0; i < wielkość; i++)
                 {
                     chV.Series["chV"].Points.AddXY(i, (Pomiary[(akt_pomiar + i + 1) % wielkość]) / 100);
-                    //if (min > Pomiary[(akt_pomiar + i + 1) % wielkość]) { min = Pomiary[(akt_pomiar + i + 1) % wielkość]; };
                     if (maks < Pomiary[(akt_pomiar + i + 1) % wielkość]) { maks = Pomiary[(akt_pomiar + i + 1) % wielkość]; };
 
                 }
-                //chV.ChartAreas[0].AxisY.Minimum = min / 100;
-                //chV.ChartAreas[0].AxisY.Maximum = maks / 100;
-
-                //chV.ChartAreas[0].AxisY2.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.True;
-                //chV.ChartAreas[0].AxisY2.IntervalAutoMode = System.Windows.Forms.DataVisualization.Charting.IntervalAutoMode.VariableCount;
-                //chV.ChartAreas[0].AxisY2.Minimum = min / 100;
                 chV.ChartAreas[0].AxisY2.Maximum = maks / 100;
-                //chV.ChartAreas[0].AxisY2.LabelAutoFitStyle = System.Windows.Forms.DataVisualization.Charting.LabelAutoFitStyles.LabelsAngleStep45;
-                //chV.ChartAreas[0].AxisY2.LabelStyle=
-                //chV.ChartAreas[0].AxisY2.
+
             }
             else
             {
 
                 for (int i = 0; i <= akt_pomiar; i++)
                 {
+                    chV.Visible = true;
                     chV.Series["chV"].Points.AddXY(i, Pomiary[i] / 100);
                     chV.ChartAreas[0].AxisX.Crossing = i;
                     chV.ChartAreas[0].AxisX.Maximum = i;
@@ -110,10 +101,12 @@ namespace Zasilacz_warsztatowy
         {
             OgrScrBar.Value = (int)(100 * OgrPrądowe);
             OgrTBox.Text = String.Format("{0:0.00}", OgrPrądowe);
-            cBoxPortCom.Items.Clear();
-            string[] ports = SerialPort.GetPortNames();
-            cBoxPortCom.Items.AddRange(ports);
-            Form1.SetDesktopLocation((Screen.PrimaryScreen.Bounds.Width - Form1.Size.Width) / 2, (Screen.PrimaryScreen.Bounds.Height - Form1.Size.Height) / 2);
+            AktualizujKomy();
+            KonrtolkiPołącz();
+
+            Form1.SetDesktopLocation((Screen.PrimaryScreen.Bounds.Width - Form1.Size.Width), 0);
+            Form1.Height = Screen.PrimaryScreen.Bounds.Height-40;
+
             OgrL1.Enabled = false;
             OgrL10.Enabled = false;
             OgrL100.Enabled = false;
@@ -122,7 +115,28 @@ namespace Zasilacz_warsztatowy
             OgrP100.Enabled = false;
             OgrScrBar.Enabled = false;
             OgrTBox.Enabled = false;
+
+            chV.Visible = false;
         }
+
+        public void AktualizujKomy()
+        {
+            cBoxPortCom.Items.Clear();
+            string[] ports = SerialPort.GetPortNames();
+            cBoxPortCom.Items.AddRange(ports);
+            if (ports.Length > 0)
+            {
+                cBoxPortCom.Text = ports[0];
+                połącz.Enabled = true;
+
+            }
+            else
+            {
+                cBoxPortCom.Text = "";
+                połącz.Enabled = false;
+            }
+        }
+
         private void dodaj_Click(object sender, EventArgs e)
         {
             rand = r.Next(0, 200);
@@ -159,22 +173,34 @@ namespace Zasilacz_warsztatowy
                 serialPort1.StopBits = (StopBits)1;
                 serialPort1.Parity = Parity.None;
                 serialPort1.Open();
-                połącz.Text = "Rozłącz";
+                KonrtolkiRozłącz();
             }
             catch (Exception err)
             {
+                KonrtolkiPołącz();
                 MessageBox.Show(err.Message, "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                rBtnON.Enabled = false;
-                lblStatus.Text = "OFF";
             }
         }
-
+        public void KonrtolkiRozłącz()
+        {
+            połącz.Text = "Rozłącz";
+            połączono = true;
+            rBtnON.Enabled = true;
+            lblStatus.Text = "ON";
+        }
+        public void KonrtolkiPołącz()
+        {
+            połącz.Text = "Połącz";
+            połączono = false;
+            rBtnON.Enabled = false;
+            lblStatus.Text = "OFF";
+        }
         public void Zamknij_port()
         {
             if (serialPort1.IsOpen)
             {
                 serialPort1.Close();
-                połącz.Text = "Połącz";
+                KonrtolkiPołącz();
             }
         }
 
@@ -277,7 +303,7 @@ namespace Zasilacz_warsztatowy
 
         private void OgrScrBar_Scroll(object sender, ScrollEventArgs e)
         {
-            OgrPrądowe = (double)(OgrScrBar.Value)/100;
+            OgrPrądowe = (double)(OgrScrBar.Value) / 100;
             ustawOgrPr();
         }
 
@@ -346,27 +372,19 @@ namespace Zasilacz_warsztatowy
 
         private void OgrTBox_KeyUp(object sender, KeyEventArgs e)
         {
-            //double temp;
-            //if (double.TryParse(OgrTBox.Text, out temp))
-            //{
-            //    OgrPrądowe = (int)(temp * 100);
-            //    tBoxTemp.Text += OgrPrądowe + " ";
-
-            //}
-            //ustawOgrPr();
             OgrTBox.Text = OgrTBox.Text.Replace(".", ",");
             if (double.TryParse(OgrTBox.Text, out double temp))
             {
                 OgrPrądowe = temp;
 
-                if (OgrPrądowe > 99) 
+                if (OgrPrądowe > 99)
                 {
                     OgrPrądowe = temp / 10;
                     OgrTBox.Text = String.Format("{0:0.0}", OgrPrądowe);
                 }
                 if (OgrPrądowe > 20 && OgrTBox.Text.Length < 5)
                 {
-                    OgrPrądowe/=10;
+                    OgrPrądowe /= 10;
                     OgrTBox.Text = OgrPrądowe.ToString();
                 }
                 else if (OgrPrądowe > 20 && OgrTBox.Text.Length > 4)
@@ -381,12 +399,22 @@ namespace Zasilacz_warsztatowy
             }
             if (OgrPrądowe < 10 && OgrTBox.Text.Length > 4)
             {
-                OgrPrądowe = Math.Round(OgrPrądowe-0.005, 2);
+                OgrPrądowe = Math.Round(OgrPrądowe - 0.005, 2);
                 OgrTBox.Text = String.Format("{0:0.00}", OgrPrądowe);
             }
             OgrTBox.Select(OgrTBox.Text.Length, 0);
             tBoxTemp.Text += OgrPrądowe + " ";
-            OgrScrBar.Value = (int)OgrPrądowe*100;
+            OgrScrBar.Value = (int)OgrPrądowe * 100;
+        }
+
+        private void cBoxPortCom_MouseDown(object sender, MouseEventArgs e)
+        {
+            AktualizujKomy();
+        }
+
+        private void comboBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            wielkość = int.Parse(cBoxPróbek.Text);
         }
     }
 }
